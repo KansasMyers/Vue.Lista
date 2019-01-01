@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Kansas Boy -->
+
+<head>
+    <!-- Live.js -->
+    <script src="js/live.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Vue.Lista</title>
+
+    <!-- Boostrap 4.0.0 MIN CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+
+    <!-- Meu css -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <div id="app">
+        <div id="root" class="container-fluid">
+
+            <add-item></add-item>
+
+            <br>
+
+            <list></list>
+
+        </div>
+    </div>
+
+    <template id="add-item">
+        <div class="card">
+            <div class="card-header">
+                Adicione itens a Lista
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="">Digite o Item:</label>
+                    <input v-model="item" type="text" class="form-control" placeholder="Digite o Item">
+                </div>
+                <button @click.stop.prevent="submit()" class="btn btn-primary btn-block">Enviar</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="list">
+        <div class="card">
+            <div class="card-header">
+                Lista
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" v-for="item in listItens">
+                    {{ item.item }}
+                </li>
+            </ul>
+        </div>
+    </template>
+
+    <!-- Vue v2.5.21 -->
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component("add-item", {
+            template: "#add-item",
+
+            data() {
+                return {
+                    item: ""
+                }
+            },
+
+            methods: {
+                submit() {
+                    this.$eventHub.$emit('submit', this.item);
+                    this.item = "";
+                }
+            }
+        });
+
+        Vue.component("list", {
+            template: "#list",
+
+            data() {
+                return {
+                    listItens: []
+                }
+            },
+
+            created() {
+                var app = this;
+                this.$eventHub.$on('submit', function (item) {
+                    app.listItens.push({
+                        item: item
+                    });
+                });
+            }
+        });
+
+        Vue.prototype.$eventHub = new Vue();
+
+        var app = new Vue({
+            el: "#app"
+        });
+    </script>
+</body>
+
+</html>
